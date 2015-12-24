@@ -7,49 +7,49 @@ module.exports = function(grunt) {
 
   /* Source Directories */
   // Source Base
-  var SRC_DIR         = 'src/';
+  var SRC_DIR         = "src/";
 
   // HTML base source
-  var SRC_DIR_HTML    = SRC_DIR + 'site/';
+  var SRC_DIR_HTML    = SRC_DIR + "site/";
   // Include base source
-  var SRC_DIR_INCLUDE = SRC_DIR_HTML + 'include';
+  var SRC_DIR_INCLUDE = SRC_DIR_HTML + "include";
   // Source HTML files
-  var SRC_FILES_HTML  = [SRC_DIR_HTML + '*.html', SRC_DIR_HTML + 'pages/*.html', SRC_DIR_HTML + 'include/*.html'];
+  var SRC_FILES_HTML  = [SRC_DIR_HTML + "*.html", SRC_DIR_HTML + "pages/*.html", SRC_DIR_HTML + "include/*.html"];
 
   // JavaScript source files
-  var SRC_DIR_JS      = SRC_DIR + 'js/';
-  var SRC_DIR_CSS     = SRC_DIR + 'css/';
-  var SRC_DIR_LESS    = SRC_DIR + 'less/';
+  var SRC_DIR_JS      = SRC_DIR + "js/";
+  var SRC_DIR_CSS     = SRC_DIR + "css/";
+  var SRC_DIR_LESS    = SRC_DIR + "less/";
 
   // CSS source files
-  var SRC_FILES_JS    = SRC_DIR_JS   + '*.js';
-  var SRC_FILES_CSS   = SRC_DIR_CSS  + '*.css';
-  var SRC_FILES_LESS  = SRC_DIR_LESS + '*.less';
+  var SRC_FILES_JS    = SRC_DIR_JS   + "*.js";
+  var SRC_FILES_CSS   = SRC_DIR_CSS  + "*.css";
+  var SRC_FILES_LESS  = SRC_DIR_LESS + "*.less";
 
   // Browser prefix for Autoprefixing
   var AP_BROWSERS = [
-  'Android >= 4',
-  'Chrome >= 35',
-  'Firefox >= 35',
-  'Explorer >= 7',
-  'iOS >= 6',
-  'Opera >= 20',
-  'Safari >= 9'
+  "Android >= 4",
+  "Chrome >= 35",
+  "Firefox >= 35",
+  "Explorer >= 7",
+  "iOS >= 6",
+  "Opera >= 20",
+  "Safari >= 9"
   ];
 
   /* Output Directories */
   // Destination Base
-  var BUILD_DIR       = 'dist/';
+  var BUILD_DIR       = "dist/";
 
   // Stylesheet Sources
-  var BUILD_DIR_CSS   = BUILD_DIR     + 'css/';
-  var BUILD_FILE_CSS  = BUILD_DIR_CSS + 'style.min.css';
-  var BUILD_FILES_CSS = BUILD_DIR_CSS + '*.css';
+  var BUILD_DIR_CSS   = BUILD_DIR     + "css/";
+  var BUILD_FILE_CSS  = BUILD_DIR_CSS + "style.min.css";
+  var BUILD_FILES_CSS = BUILD_DIR_CSS + "*.css";
 
   // JavaScripts Sources
-  var BUILD_DIR_JS    = BUILD_DIR     + 'js/';
-  var BUILD_FILE_JS   = BUILD_DIR_JS  + 'script.js';
-  var BUILD_FILES_JS  = BUILD_DIR_JS  + '*.js';
+  var BUILD_DIR_JS    = BUILD_DIR     + "js/";
+  var BUILD_FILE_JS   = BUILD_DIR_JS  + "script.js";
+  var BUILD_FILES_JS  = BUILD_DIR_JS  + "*.js";
 
 
   grunt.initConfig({
@@ -57,7 +57,7 @@ module.exports = function(grunt) {
 
     // clean each destination before output
     clean: {
-      html: ['dist/index.html', 'dist/pages/*.html'],
+      html: ["dist/index.html", "dist/pages/*.html"],
       css: [BUILD_FILES_CSS, SRC_FILES_CSS],
       js : [BUILD_FILES_JS]
     },
@@ -66,7 +66,7 @@ module.exports = function(grunt) {
     includes: {
       build: {
         cwd: SRC_DIR_HTML,
-        src: [ '*.html', 'pages/*.html' ],
+        src: [ "*.html", "pages/*.html" ],
         dest: BUILD_DIR,
         options: {
           flatten: true,
@@ -169,13 +169,6 @@ module.exports = function(grunt) {
       }
     },
 
-    concurrent: {
-      options: {
-        logConcurrentOutput: true
-      },
-      set1: ['watch:html', 'watch:styles']
-    },
-
     watch: {
       html: {
         options: {
@@ -203,8 +196,6 @@ module.exports = function(grunt) {
 
   //Default Task(s)
   grunt.registerTask('default', 'watch');
-  grunt.registerTask('htmlcss', ['concurrent:set1']);
 
-  grunt.registerTask('clean', ['clean:css', 'clean:js']);
   grunt.registerTask('cleancss', ['uncss', 'cssmin:dist']);
 };
