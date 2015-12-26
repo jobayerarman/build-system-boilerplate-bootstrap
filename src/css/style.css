@@ -902,6 +902,7 @@ h3,
 .h3 {
   margin-top: 1rem;
   margin-bottom: 0.5rem;
+  letter-spacing: -0.1rem;
 }
 h1 small,
 .h1 small,
@@ -959,16 +960,19 @@ h4,
 .h4 {
   font-size: 2.4rem;
   line-height: 1.35;
+  letter-spacing: -0.08rem;
 }
 h5,
 .h5 {
   font-size: 1.8rem;
   line-height: 1.5;
+  letter-spacing: -0.05;
 }
 h6,
 .h6 {
   font-size: 1.5rem;
   line-height: 1.6;
+  letter-spacing: 0;
 }
 p {
   margin: 0 0 1rem;

@@ -66,7 +66,7 @@ module.exports = function(grunt) {
       css: {
         options: {
           title: 'CSS',
-          message: 'CSS compiles successfully'
+          message: 'Running CSSFlow'
         }
       },
       copy: {
@@ -211,7 +211,7 @@ module.exports = function(grunt) {
           spawn: false
         },
         files: ['src/less/*.less', 'src/less/**/*.less'],
-        tasks: ['cssflow', 'notify:css', 'copy', 'notify:copy']
+        tasks: ['notify:css', 'cssflow', 'copy', 'notify:copy']
       },
       scripts: {
         options: {
