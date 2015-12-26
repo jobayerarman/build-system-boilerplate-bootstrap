@@ -142,6 +142,7 @@ module.exports = function(grunt) {
 
     jshint: {
       options: {
+        reporter: require('jshint-stylish'),
         curly: true,
         globals: {
           jQuery: true
