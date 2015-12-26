@@ -23,6 +23,7 @@
     "grunt-contrib-watch": "^0.6.0",
     "grunt-cssflow": "^0.1.5",
     "grunt-includes": "^0.5.1",
+    "grunt-notify": "^0.4.3",
     "grunt-uncss": "^0.4.3",
     "jshint-stylish": "^2.1.0",
     "load-grunt-tasks": "^3.2.0"

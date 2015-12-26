@@ -55,10 +55,38 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    // Shows tasks completion notification
+    notify: {
+      html: {
+        options: {
+          title: 'HTML',
+          message: 'HTML files build success'
+        }
+      },
+      css: {
+        options: {
+          title: 'CSS',
+          message: 'CSS compiles successfully'
+        }
+      },
+      copy: {
+        options: {
+          title: 'CSS Copy to dist folder',
+          message: 'CSS files copied to dist'
+        }
+      },
+      js: {
+        options: {
+          title: 'JavaScript',
+          message: 'JavaScript concated successfully'
+        }
+      },
+    },
+
     // clean each destination before output
     clean: {
       html: ["dist/index.html", "dist/pages/*.html"],
-      css: [BUILD_FILES_CSS, SRC_FILES_CSS],
+      css: [SRC_FILES_CSS],
       js : [BUILD_FILES_JS]
     },
 
@@ -176,27 +204,27 @@ module.exports = function(grunt) {
           spawn: false
         },
         files: SRC_FILES_HTML,
-        tasks: ['includes']
+        tasks: ['includes', 'notify:html']
       },
       styles: {
         options: {
           spawn: false
         },
         files: ['src/less/*.less', 'src/less/**/*.less'],
-        tasks: ['cssflow', 'copy']
+        tasks: ['cssflow', 'notify:css', 'copy', 'notify:copy']
       },
       scripts: {
         options: {
           spawn: false
         },
         files: ['src/js//*.js'],
-        tasks: ['jshint:beforeconcat', 'clean:js', 'concat', 'uglify', 'jshint:afterconcat']
+        tasks: ['jshint:beforeconcat', 'clean:js', 'concat', 'notify:js', 'uglify', 'jshint:afterconcat']
       }
     }
   });
 
   //Default Task(s)
-  grunt.registerTask('default', 'watch');
+  grunt.registerTask('default', ['includes', 'clean:css', 'cssflow', 'copy', 'watch']);
 
   grunt.registerTask('cleancss', ['uncss', 'cssmin:dist']);
 };
