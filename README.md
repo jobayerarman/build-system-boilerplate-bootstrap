@@ -21,3 +21,6 @@ directory.
 
 While developing run `grunt` as this will watch 
 the [`src/`](src) dir and output to [`dist/`](dist) directory.
+
+## Need help?
+Feel free to [create an issue](https://github.com/jobayerarman/build-system-boilerplate-bootstrap/issues), [tweet me](https://twitter.com/JobayerArman), or [send me an email](mailto:carbonjha@gmail.com). I'd be glad to help where I can!
