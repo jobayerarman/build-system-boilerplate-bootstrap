@@ -3093,6 +3093,67 @@ fieldset[disabled] .btn-danger.focus {
   color: #d9534f;
   background-color: #ffffff;
 }
+.btn-ghost {
+  color: #333333;
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #333333;
+  font-family: "Montserrat", "Segoe UI", Trebuchet, Tahoma, Arial, sans-serif;
+  font-weight: 700;
+  border-radius: 0;
+  border: 2px solid;
+}
+.btn-ghost:focus,
+.btn-ghost.focus {
+  color: #333333;
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #000000;
+}
+.btn-ghost:hover {
+  color: #333333;
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #141414;
+}
+.btn-ghost:active,
+.btn-ghost.active,
+.open > .dropdown-toggle.btn-ghost {
+  color: #333333;
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #141414;
+}
+.btn-ghost:active:hover,
+.btn-ghost.active:hover,
+.open > .dropdown-toggle.btn-ghost:hover,
+.btn-ghost:active:focus,
+.btn-ghost.active:focus,
+.open > .dropdown-toggle.btn-ghost:focus,
+.btn-ghost:active.focus,
+.btn-ghost.active.focus,
+.open > .dropdown-toggle.btn-ghost.focus {
+  color: #333333;
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #000000;
+}
+.btn-ghost:active,
+.btn-ghost.active,
+.open > .dropdown-toggle.btn-ghost {
+  background-image: none;
+}
+.btn-ghost.disabled:hover,
+.btn-ghost[disabled]:hover,
+fieldset[disabled] .btn-ghost:hover,
+.btn-ghost.disabled:focus,
+.btn-ghost[disabled]:focus,
+fieldset[disabled] .btn-ghost:focus,
+.btn-ghost.disabled.focus,
+.btn-ghost[disabled].focus,
+fieldset[disabled] .btn-ghost.focus {
+  background-color: rgba(0, 0, 0, 0);
+  border-color: #333333;
+}
+.btn-ghost .badge {
+  color: rgba(0, 0, 0, 0);
+  background-color: #333333;
+}
 .btn-link {
   color: #3782c3;
   font-weight: normal;
