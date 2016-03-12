@@ -2,6 +2,7 @@
 
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
 [![Build Status](https://travis-ci.org/jobayerarman/build-system-boilerplate-bootstrap.svg?branch=master)](https://travis-ci.org/jobayerarman/build-system-boilerplate-bootstrap)
+[![Build status](https://ci.appveyor.com/api/projects/status/kofgmse4gvrl9yy2/branch/master?svg=true)](https://ci.appveyor.com/project/jobayerarman/build-system-boilerplate-bootstrap/branch/master)
 [![Dependency Status](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap.svg)](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap)
 [![devDependency Status](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap/dev-status.svg)](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap#info=devDependencies)
 
