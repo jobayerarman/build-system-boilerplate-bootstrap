@@ -197,9 +197,11 @@ module.exports = function(grunt) {
     }
   });
 
-  //Default Task(s)
+  //Default Tasks
   grunt.registerTask('default', ['includes', 'clean:css', 'cssflow', 'copy', 'watch']);
 
+  //Default Task(s)
+  grunt.registerTask('test', ['includes', 'clean:css', 'cssflow', 'copy']);
   // Image compressing task
   grunt.registerTask('compress', ['newer:imagemin']);
   // remove unused css class
