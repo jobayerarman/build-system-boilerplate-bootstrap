@@ -1,6 +1,7 @@
 # Front-End Build System with Bootstrap
 
 [![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+[![Build Status](https://travis-ci.org/jobayerarman/build-system-boilerplate-bootstrap.svg?branch=master)](https://travis-ci.org/jobayerarman/build-system-boilerplate-bootstrap)
 [![Dependency Status](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap.svg)](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap)
 [![devDependency Status](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap/dev-status.svg)](https://david-dm.org/jobayerarman/build-system-boilerplate-bootstrap#info=devDependencies)
 
@@ -24,7 +25,7 @@ Folder structure using [SASS Guidelines](http://sass-guidelin.es/) for easy main
 You should be able to work almost entirely in the [`src/`](src)
 directory.
 
-While developing run `grunt` as this will watch 
+While developing run `grunt` as this will watch
 the [`src/`](src) dir and output to [`dist/`](dist) directory.
 
 ## Need help?
