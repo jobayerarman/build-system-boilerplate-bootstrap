@@ -200,7 +200,7 @@ module.exports = function(grunt) {
   //Default Tasks
   grunt.registerTask('default', ['includes', 'clean:css', 'cssflow', 'copy', 'watch']);
 
-  //Default Task(s)
+  //Test Tasks for travis
   grunt.registerTask('test', ['includes', 'clean:css', 'cssflow', 'copy']);
   // Image compressing task
   grunt.registerTask('compress', ['newer:imagemin']);
