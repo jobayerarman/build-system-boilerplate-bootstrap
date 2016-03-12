@@ -28,5 +28,48 @@ directory.
 While developing run `grunt` as this will watch
 the [`src/`](src) dir and output to [`dist/`](dist) directory.
 
+## Directory Structure
+
+```
+project-name/
+├── dist/
+|   ├── css/
+│   |   ├── style.css
+│   |   └── style.min.css
+|   ├── images/
+|   ├── js/
+│   |   ├── script.js
+│   |   └── script.min.js
+|   ├── pages/
+|   └── index.html
+├── src/
+|   ├── css/
+│   |   ├── style.css
+│   |   └── style.min.css
+|   ├── images/
+|   ├── js/
+│   |   ├── script.js
+│   |   └── script.min.js
+|   ├── less/
+|   |   ├── 1-vendor/
+|   |   ├── 2-utils/
+|   |   ├── 3-base/
+|   |   ├── 4-layout/
+|   |   ├── 5-component/
+|   |   ├── 6-themes/
+|   |   ├── 7-pages/
+|   |   ├── main.less
+|   |   └── README.md
+|   ├── site/
+|   |   ├── include/
+|   |   ├── pages/
+|   |   └── index.html
+├── .travis.yml
+├── Gruntfile.js
+├── LICENSE
+├── README.md
+└── package.json
+```
+
 ## Need help?
 Feel free to [create an issue](https://github.com/jobayerarman/build-system-boilerplate-bootstrap/issues), [tweet me](https://twitter.com/JobayerArman), or [send me an email](mailto:carbonjha@gmail.com). I'd be glad to help where I can!
