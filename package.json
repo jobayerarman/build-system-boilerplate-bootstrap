@@ -1,7 +1,7 @@
 {
   "name": "build-system-boilerplate-bootstrap",
   "description": "Build system boilerplate using LESS bootstrap. Folder layout design using SASS guidelines for easy maintain & change.",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "author": {
     "name": "Jobayer Arman",
     "email": "carbonjha@gmail.com"
@@ -16,13 +16,11 @@
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-concat": "^1.0.0",
     "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^1.0.0",
     "grunt-contrib-imagemin": "^1.0.0",
     "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-less": "^1.1.0",
     "grunt-contrib-uglify": "^1.0.0",
-    "grunt-contrib-watch": "^0.6.0",
-    "grunt-cssflow": "^0.1.5",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-cssflow": "^0.2.0",
     "grunt-includes": "^0.5.4",
     "grunt-newer": "^1.1.2",
     "grunt-notify": "^0.4.5",

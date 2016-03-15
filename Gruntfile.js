@@ -18,15 +18,15 @@ module.exports = function(grunt) {
   // Source HTML files
   var SRC_FILES_HTML  = [SRC_DIR_HTML + "*.html", SRC_DIR_HTML + "pages/*.html", SRC_DIR_HTML + "include/*.html"];
 
-  // JavaScript source files
+  // Source Directory
   var SRC_DIR_JS      = SRC_DIR + "js/";
   var SRC_DIR_CSS     = SRC_DIR + "css/";
   var SRC_DIR_LESS    = SRC_DIR + "less/";
 
-  // CSS source files
+  // Source files
   var SRC_FILES_JS    = SRC_DIR_JS   + "*.js";
   var SRC_FILES_CSS   = SRC_DIR_CSS  + "*.css";
-  var SRC_FILES_LESS  = SRC_DIR_LESS + "*.less";
+  var SRC_FILES_LESS  = SRC_DIR_LESS + "**/*.less";
 
   // Browser prefix for Autoprefixing
   var AP_BROWSERS = [
@@ -43,12 +43,12 @@ module.exports = function(grunt) {
   // Destination Base
   var BUILD_DIR       = "dist/";
 
-  // Stylesheet Sources
+  // Stylesheet
   var BUILD_DIR_CSS   = BUILD_DIR     + "css/";
   var BUILD_FILE_CSS  = BUILD_DIR_CSS + "style.min.css";
   var BUILD_FILES_CSS = BUILD_DIR_CSS + "*.css";
 
-  // JavaScripts Sources
+  // JavaScripts
   var BUILD_DIR_JS    = BUILD_DIR     + "js/";
   var BUILD_FILE_JS   = BUILD_DIR_JS  + "script.js";
   var BUILD_FILES_JS  = BUILD_DIR_JS  + "*.js";
@@ -95,10 +95,10 @@ module.exports = function(grunt) {
     // copy CSS from source directory to dist folder
     copy: {
       build: {
+        expand: true,
         cwd: SRC_DIR_CSS,
         src: ['*.css'],
-        dest: BUILD_DIR_CSS,
-        expand: true
+        dest: BUILD_DIR_CSS
       }
     },
 
@@ -107,7 +107,7 @@ module.exports = function(grunt) {
       build: {
         files: [
           {
-            src: 'index.html',
+            src: 'src/site/index.html',
             dest: 'dist/css/style.uncss.css'
           }
         ],
@@ -143,6 +143,10 @@ module.exports = function(grunt) {
 
     // Minify files with UglifyJS
     uglify: {
+      options: {
+        // the banner is inserted at the top of the output
+        banner: '/*! <%= grunt.template.today("dd-mm-yyyy HH:MM") %> */\n'
+      },
       build: {
         files: {
           'dist/js/script.min.js': 'dist/js/script.js'
@@ -169,6 +173,12 @@ module.exports = function(grunt) {
     },
 
     watch: {
+      configFiles: {
+        options: {
+          reload: true
+        },
+        files: [ 'Gruntfile.js'],
+      },
       html: {
         options: {
           spawn: false
@@ -180,7 +190,7 @@ module.exports = function(grunt) {
         options: {
           spawn: false
         },
-        files: ['src/less/*.less', 'src/less/**/*.less'],
+        files: [SRC_FILES_LESS],
         tasks: ['cssflow', 'copy']
       },
       scripts: {
@@ -191,6 +201,9 @@ module.exports = function(grunt) {
         tasks: ['jshint:beforeconcat', 'clean:js', 'concat', 'uglify', 'jshint:afterconcat']
       },
       images: {
+        options: {
+          spawn: false
+        },
         files: ['src/images/**/*.{png,jpg,gif}'],
         tasks: ['compress']
       }
