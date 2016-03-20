@@ -66,14 +66,25 @@ module.exports = function(grunt) {
 
     // Build the site using grunt-includes
     includes: {
-      build: {
+      dist: {
         cwd: SRC_DIR_HTML,
         src: [ "*.html", "pages/*.html" ],
         dest: BUILD_DIR,
         options: {
           flatten: true,
+          duplicates: false,
           includePath: SRC_DIR_INCLUDE
         }
+      }
+    },
+
+    // Changes the path using grunt-processhtml
+    processhtml: {
+      build: {
+        expand: true,
+        cwd: BUILD_DIR,
+        src: ['**/*.html'],
+        dest: BUILD_DIR
       }
     },
 
@@ -94,7 +105,7 @@ module.exports = function(grunt) {
 
     // copy CSS from source directory to dist folder
     copy: {
-      build: {
+      css: {
         expand: true,
         cwd: SRC_DIR_CSS,
         src: ['*.css'],
@@ -135,7 +146,7 @@ module.exports = function(grunt) {
       options: {
         seperator: ";"
       },
-      build: {
+      js: {
         src: [SRC_FILES_JS],
         dest: BUILD_FILE_JS
       }
@@ -147,7 +158,7 @@ module.exports = function(grunt) {
         // the banner is inserted at the top of the output
         banner: '/*! <%= grunt.template.today("dd-mm-yyyy HH:MM") %> */\n'
       },
-      build: {
+      dist: {
         files: {
           'dist/js/script.min.js': 'dist/js/script.js'
         }
@@ -177,7 +188,7 @@ module.exports = function(grunt) {
         options: {
           reload: true
         },
-        files: [ 'Gruntfile.js'],
+        files: ['Gruntfile.js'],
       },
       html: {
         options: {
@@ -211,7 +222,12 @@ module.exports = function(grunt) {
   });
 
   //Default Tasks
-  grunt.registerTask('default', ['includes', 'clean:css', 'cssflow', 'copy', 'watch']);
+  grunt.registerTask('default', ['includes', 'clean:css', 'cssflow', 'copy:css']);
+
+  // Production tasks
+  grunt.registerTask('dev', ['includes', 'clean:css', 'cssflow', 'copy:css', 'watch']);
+  // Build Tasks changes path variables for uploading
+  grunt.registerTask('build', ['includes', 'processhtml']);
 
   //Test Tasks for travis
   grunt.registerTask('test', ['includes', 'clean:css', 'cssflow', 'copy']);
