@@ -45,7 +45,6 @@ module.exports = function(grunt) {
 
   // Stylesheet
   var BUILD_DIR_CSS   = BUILD_DIR     + "css/";
-  var BUILD_FILE_CSS  = BUILD_DIR_CSS + "style.min.css";
   var BUILD_FILES_CSS = BUILD_DIR_CSS + "*.css";
 
   // JavaScripts
@@ -59,14 +58,15 @@ module.exports = function(grunt) {
 
     // clean each destination before output
     clean: {
-      html: ["dist/index.html", "dist/pages/*.html"],
-      css: [SRC_FILES_CSS],
+      html: ["dist/**/*.html"],
+      stylesall: [SRC_FILES_CSS, BUILD_FILES_CSS],
+      stylesbuild: [BUILD_FILES_CSS],
       js : [BUILD_FILES_JS]
     },
 
     // Build the site using grunt-includes
     includes: {
-      dist: {
+      build: {
         cwd: SRC_DIR_HTML,
         src: [ "*.html", "pages/*.html" ],
         dest: BUILD_DIR,
@@ -94,6 +94,9 @@ module.exports = function(grunt) {
         preprocessor: 'less',
         autoprefixer: {
           browsers: AP_BROWSERS
+        },
+        cssmin: {
+          keepSpecialComments: 0
         }
       },
       build: {
@@ -105,7 +108,7 @@ module.exports = function(grunt) {
 
     // copy CSS from source directory to dist folder
     copy: {
-      css: {
+      styles: {
         expand: true,
         cwd: SRC_DIR_CSS,
         src: ['*.css'],
@@ -146,7 +149,7 @@ module.exports = function(grunt) {
       options: {
         seperator: ";"
       },
-      js: {
+      build: {
         src: [SRC_FILES_JS],
         dest: BUILD_FILE_JS
       }
@@ -158,9 +161,9 @@ module.exports = function(grunt) {
         // the banner is inserted at the top of the output
         banner: '/*! <%= grunt.template.today("dd-mm-yyyy HH:MM") %> */\n'
       },
-      dist: {
+      build: {
         files: {
-          'dist/js/script.min.js': 'dist/js/script.js'
+          'dist/js/script.min.js': BUILD_FILE_JS
         }
       }
     },
@@ -169,16 +172,16 @@ module.exports = function(grunt) {
     imagemin: {
       dynamic: {
         options: {
-          optimizationLevel: 3,
-          progressive: true,
+          optimizationLevel: 1,
+          progressive: false,
           svgoPlugins: [{ removeViewBox: false }],
           use: [mozjpeg({quality: 75})]
         },
         files: [{
           expand: true,
-          cwd: 'src/',
+          cwd: 'src/images/',
           src: ['**/*.{png,jpg,gif}'],
-          dest: 'dist/'
+          dest: 'dist/images/'
         }]
       }
     },
@@ -202,7 +205,7 @@ module.exports = function(grunt) {
           spawn: false
         },
         files: [SRC_FILES_LESS],
-        tasks: ['cssflow', 'copy']
+        tasks: ['cssflow', 'clean:stylesbuild', 'copy:styles']
       },
       scripts: {
         options: {
@@ -222,15 +225,15 @@ module.exports = function(grunt) {
   });
 
   //Default Tasks
-  grunt.registerTask('default', ['includes', 'clean:css', 'cssflow', 'copy:css']);
+  grunt.registerTask('default', ['includes', 'clean:stylesall', 'cssflow', 'copy:styles']);
 
   // Production tasks
-  grunt.registerTask('dev', ['includes', 'clean:css', 'cssflow', 'copy:css', 'watch']);
+  grunt.registerTask('dev', ['includes', 'clean:stylesall', 'cssflow', 'copy:styles', 'watch']);
   // Build Tasks changes path variables for uploading
   grunt.registerTask('build', ['includes', 'processhtml']);
 
   //Test Tasks for travis
-  grunt.registerTask('test', ['includes', 'clean:css', 'cssflow', 'copy']);
+  grunt.registerTask('test', ['includes', 'clean:stylesall', 'cssflow', 'copy:styles']);
   // Image compressing task
   grunt.registerTask('compress', ['newer:imagemin']);
   // remove unused css class
