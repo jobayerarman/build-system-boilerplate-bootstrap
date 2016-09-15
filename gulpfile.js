@@ -13,7 +13,7 @@
  *      8. InjectCSS instead of browser page reload.
  *
  * @author Jobayer Arman (@JobayerArman)
- * @version 1.0.1
+ * @version 1.2.0
  */
 
 /**
@@ -32,7 +32,7 @@ var basePaths = {
 var styles = {
   src: {
     path      : basePaths.src + 'less/',
-    mainFile : basePaths.src + 'less/main.less',
+    mainFile  : basePaths.src + 'less/main.less',
     allFiles  : basePaths.src + 'less/**/*.less'
   },
   dest: {
@@ -48,7 +48,21 @@ var scripts = {
   },
   dest: {
     path      : basePaths.dest + 'js/',
-    files     : basePaths.dest + 'js/*.js'
+    files     : basePaths.dest + 'js/*.js',
+    filename  : 'script.js'
+  }
+};
+// HTML folders and files
+var html = {
+  src: {
+    path      : basePaths.src + 'site/',
+    pages     : basePaths.src + 'site/pages/*.html',
+    files     : basePaths.src + 'site/**/*.html',
+    templates : basePaths.src + 'site/templates'
+  },
+  dest: {
+    path      : basePaths.dest + 'public/',
+    files     : basePaths.dest + 'public/*.html'
   }
 };
 // Image folders and files
@@ -67,23 +81,21 @@ var watch = {
   styles    : styles.src.allFiles,
   scripts   : scripts.src.files,
   images    : images.src.files,
-  html      : basePaths.src + '**/*.html'
+  html      : html.src.files
 };
 
 // Browsers you care about for autoprefixing.
 // Browserlist https://github.com/ai/browserslist
 const AUTOPREFIXER_BROWSERS = [
-  'last 2 version',
-  '> 1%',
+  'android >= 4',
+  'bb >= 10',
+  'chrome >= 34',
+  'ff >= 30',
   'ie >= 9',
   'ie_mob >= 10',
-  'ff >= 30',
-  'chrome >= 34',
-  'safari >= 7',
-  'opera >= 23',
   'ios >= 7',
-  'android >= 4',
-  'bb >= 10'
+  'opera >= 23',
+  'safari >= 7',
 ];
 // End of project variables
 
@@ -105,18 +117,21 @@ var jshint       = require('gulp-jshint');           // JSHint plugin for gulp
 var concat       = require('gulp-concat');           // Concatenates JS files
 var uglify       = require('gulp-uglify');           // Minifies JS files
 
+// HTML template engine
+var htmlRender   = require('gulp-nunjucks-render');  // Render Nunjucks templates
+
 // Image realted plugins.
 var imagemin     = require('gulp-imagemin');         // Minify PNG, JPEG, GIF and SVG images with imagemin.
 
 // Utility related plugins.
-var plumber      = require('gulp-plumber');          // Prevent pipe breaking caused by errors from gulp plugins
-var size         = require('gulp-size');             // Logs out the total size of files in the stream and optionally the individual file-sizes
-var rename       = require('gulp-rename');           // Renames files E.g. style.css -> style.min.css
-var notify       = require('gulp-notify');           // Sends message notification to you
 var browserSync  = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
-var reload       = browserSync.reload;               // For manual browser reload.
 var del          = require('del');                   // Delete files and folders
 var gulpSequence = require('gulp-sequence');         // Run a series of gulp tasks in order
+var notify       = require('gulp-notify');           // Sends message notification to you
+var plumber      = require('gulp-plumber');          // Prevent pipe breaking caused by errors from gulp plugins
+var reload       = browserSync.reload;               // For manual browser reload.
+var rename       = require('gulp-rename');           // Renames files E.g. style.css -> style.min.css
+var size         = require('gulp-size');             // Logs out the total size of files in the stream and optionally the individual file-sizes
 
 
 /**
@@ -147,7 +162,7 @@ gulp.task('clean', function() {
  */
  gulp.task('styles', function() {
   return gulp.src( styles.src.mainFile )
-    .pipe( plumber({errorHandler: errorLog}) )
+    .pipe( plumber( {errorHandler: errorLog}) )
 
     .pipe( less() )
 
@@ -183,7 +198,7 @@ gulp.task( 'scripts', function() {
     .pipe( jshint() )
     .pipe( jshint.reporter('jshint-stylish') )
 
-    .pipe( concat( 'script.js' ) )
+    .pipe( concat( scripts.dest.filename ) )
     .pipe( gulp.dest( scripts.dest.path ) )
     .pipe( size({
       showFiles: true
@@ -195,6 +210,21 @@ gulp.task( 'scripts', function() {
     }))
     .pipe( uglify() )
     .pipe( gulp.dest( scripts.dest.path ) )
+    .pipe( size({
+      showFiles: true
+    }) );
+});
+
+
+/**
+ * Task: render HTML template
+ */
+gulp.task( 'render-html', function() {
+  return gulp.src( html.src.pages )
+    .pipe(htmlRender({
+      path: html.src.templates
+    }))
+    .pipe( gulp.dest( html.dest.path ))
     .pipe( size({
       showFiles: true
     }) );
@@ -234,16 +264,21 @@ gulp.task( 'image:compress', function() {
  * This task does the following:
  *    1. Sets the project URL
  *    2. Sets inject CSS
- *    3. You may define a custom port
- *    4. You may want to stop the browser from openning automatically
+ *    3. You may want to stop the browser from openning automatically
  */
 gulp.task( 'browser-sync', function() {
   browserSync.init( {
 
     // built-in static server for basic HTML/JS/CSS websites
     server: {
-      baseDir: "./dist/"
+      baseDir: html.dest.path,
+      routes: {
+        '/dist': 'dist/'
+      }
     },
+
+    // Open the site in Chrome
+    browser: "chrome.exe",
 
     // `true` Automatically open the browser with BrowserSync live server.
     // `false` Stop the browser from automatically opening.
@@ -253,8 +288,8 @@ gulp.task( 'browser-sync', function() {
     // Commnet it to reload browser for every CSS change.
     injectChanges: true,
 
-    // Use a specific port (instead of the one auto-detected by Browsersync).
-    // port: 7000,
+    // Console log connections
+    logConnections: false,
 
     // The small pop-over notifications in the browser are not always needed/wanted
     notify: false,
@@ -265,7 +300,7 @@ gulp.task( 'browser-sync', function() {
 /**
  * Default Gulp task
  */
-gulp.task( 'default', gulpSequence('clean', 'styles', 'scripts', 'image:compress'));
+gulp.task( 'default', gulpSequence('clean', 'render-html', 'styles', 'scripts', 'image:compress'));
 
 
 /**
@@ -273,9 +308,9 @@ gulp.task( 'default', gulpSequence('clean', 'styles', 'scripts', 'image:compress
   *
   * Watches for file changes and runs specific tasks.
   */
-gulp.task( 'serve', ['styles', 'scripts', 'browser-sync'], function() {
-  gulp.watch( watch.html, reload ); // Reload on PHP file changes.
-  gulp.watch( watch.styles, [ 'styles' ] ); // Reload on SCSS file changes.
-  gulp.watch( watch.scripts, [ 'scripts', reload ] ); // Reload on customJS file changes.
+gulp.task( 'serve', ['render-html', 'styles', 'scripts', 'browser-sync'], function() {
+  gulp.watch( watch.html, [ 'render-html', reload] );       // Render files and reload on HTML file changes.
+  gulp.watch( watch.styles, [ 'styles' ] );                 // Reload on SCSS file changes.
+  gulp.watch( watch.scripts, [ 'scripts', reload ] );       // Reload on customJS file changes.
   gulp.watch( watch.images, [ 'image:compress', reload ] ); // Reload on image file changes.
 });

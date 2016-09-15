@@ -1,4 +1,7 @@
-include "head.html"
+<!-- index.html -->
+{% extends "layout.html" %}
+
+  {% block content %}
     <section class="container text">
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -6,7 +9,7 @@ include "head.html"
           <h2 class="title">welcome to super optimized front-end build system boilerplate with Grunt, Bootstrap LESS and More...</h2>
         </div>
       </div>
-      <br></br>
+      <br>
 
       <div class="row">
         <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
@@ -32,10 +35,10 @@ include "head.html"
           <h5>The grunt task will watch the <code>src/</code> directory and output to <code>dist/</code> directory</h5>
         </div>
       </div>
-      <br></br>
+      <br>
 
       <div class="about-button text-center">
-        <a href="pages/about.html" class="btn btn-ghost">Learn More</a>
+        <a href="about.html" class="btn btn-ghost">Learn More</a>
       </div>
     </section>
-include "foot.html"
+  {% endblock %}

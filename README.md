@@ -11,22 +11,23 @@ Build system boilerplate using LESS bootstrap.
 Folder structure using [SASS Guidelines](http://sass-guidelin.es/) for easy maintain &amp; change.
 
 * The development code is in the [`src/`](src) directory.
-* The build process relies on [`grunt`](http://gruntjs.com/).
-* The `grunt` tasks can be found in the [`Gruntfile.js`](gruntfile.js)
+* The build process relies on [`gulp`](http://gulpjs.com/).
+* The `gulp` tasks can be found in the [`gulpfile.js`](gulpfile.js)
   file.
 
 ## Setup
 
 1. Install [`Node.js`](https://nodejs.org/) and
    [`npm`](http://blog.npmjs.org/post/85484771375/how-to-install-npm).
-2. Run `npm install`.
+2. Run `npm install`
+3. Run `gulp serve`
 
 ## Development
 
 You should be able to work almost entirely in the [`src/`](src)
 directory.
 
-While developing run `grunt` as this will watch
+While developing run `gulp` as this will watch
 the [`src/`](src) dir and output to [`dist/`](dist) directory.
 
 ## Directory Structure
@@ -37,17 +38,18 @@ project-name/
 |   ├── css/
 │   |   ├── style.css
 │   |   └── style.min.css
-|   ├── images/
+|   ├── img/
 |   ├── js/
 │   |   ├── script.js
 │   |   └── script.min.js
-|   ├── pages/
-|   └── index.html
+|   └── public/
+|				├── indext.html
+|   		└── about.html
 ├── src/
 |   ├── css/
-│   |   ├── style.css
-│   |   └── style.min.css
-|   ├── images/
+│   |   ├── main.css
+│   |   └── main.min.css
+|   ├── img/
 |   ├── js/
 │   |   ├── script.js
 │   |   └── script.min.js
@@ -62,14 +64,16 @@ project-name/
 |   |   ├── main.less
 |   |   └── README.md
 |   ├── site/
-|   |   ├── include/
 |   |   ├── pages/
-|   |   └── index.html
-├── .travis.yml
-├── Gruntfile.js
+|   |   |		|── index.html
+|   |   |		└── about.html
+|   |   |── templates/
+|   |   |		|── partials/
+|   |   |		└── layout.html
+├── gulpfile.js
 ├── LICENSE
-├── README.md
-└── package.json
+├── package.json
+└── README.md
 ```
 
 ## Need help?
