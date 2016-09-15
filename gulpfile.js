@@ -3,17 +3,17 @@
  *
  * Implements:
  *      1. Live reloads browser with BrowserSync.
- *      2. CSS: Less to CSS conversion, error catching, Autoprefixing, Sourcemaps,
- *         CSS minification, and Merge Media Queries.
- *      3. JS: Concatenates & uglifies Vendor and Custom JS files.
- *      4. Images: Minifies PNG, JPEG, GIF and SVG images.
+ *      2. CSS: Less to CSS conversion, error catching, Autoprefixing,
+ *         CSS minification.
+ *      3. JS: Concatenates & uglifies Custom JS files.
+ *      4. Images: Compresses PNG, JPEG, GIF and SVG images.
  *      5. Watches files for changes in CSS or JS.
  *      6. Watches files for changes in HTML.
  *      7. Corrects the line endings.
  *      8. InjectCSS instead of browser page reload.
  *
  * @author Jobayer Arman (@JobayerArman)
- * @version 0.1.0
+ * @version 1.0.1
  */
 
 /**
@@ -45,18 +45,18 @@ var projectHTMLWatchFiles   = './src/site/**/*.html'; // Path to all HTML files.
 // Browsers you care about for autoprefixing.
 // Browserlist https        ://github.com/ai/browserslist
 const AUTOPREFIXER_BROWSERS = [
-    'last 2 version',
-    '> 1%',
-    'ie >= 9',
-    'ie_mob >= 10',
-    'ff >= 30',
-    'chrome >= 34',
-    'safari >= 7',
-    'opera >= 23',
-    'ios >= 7',
-    'android >= 4',
-    'bb >= 10'
-  ];
+  'last 2 version',
+  '> 1%',
+  'ie >= 9',
+  'ie_mob >= 10',
+  'ff >= 30',
+  'chrome >= 34',
+  'safari >= 7',
+  'opera >= 23',
+  'ios >= 7',
+  'android >= 4',
+  'bb >= 10'
+];
 
 /**
  * Load Plugins.
@@ -72,9 +72,9 @@ var cssmin          = require('gulp-cssmin'); // Minifies CSS files.
 var autoprefixer    = require('gulp-autoprefixer'); // Autoprefixing magic.
 
 // JS related plugins.
+var jshint          = require('gulp-jshint'); // JSHint plugin for gulp
 var concat          = require('gulp-concat'); // Concatenates JS files
 var uglify          = require('gulp-uglify'); // Minifies JS files
-var jshint          = require('gulp-jshint'); // JSHint plugin for gulp
 
 // Image realted plugins.
 var imagemin        = require('gulp-imagemin'); // Minify PNG, JPEG, GIF and SVG images with imagemin.
@@ -85,6 +85,89 @@ var rename          = require('gulp-rename'); // Renames files E.g. style.css ->
 var notify          = require('gulp-notify'); // Sends message notification to you
 var browserSync     = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
 var reload          = browserSync.reload; // For manual browser reload.
+
+/**
+ * Log Errors
+ */
+function errorLog (err) {
+  notify.onError({title: "LESS Error", message: "Check your terminal"})(err); //Error Notification
+  console.log(err.toString()); //Prints Error to Console
+  this.emit('end');
+}
+
+
+/**
+ * Task: `styles`.
+ *
+ * Compiles Less, Autoprefixes it and Minifies CSS.
+ *
+ */
+ gulp.task('styles', function () {
+  gulp.src( styleSRC )
+  .pipe(plumber({errorHandler: errorLog}))
+
+  .pipe(less())
+
+  .pipe(autoprefixer( AUTOPREFIXER_BROWSERS ))
+  .pipe(gulp.dest(styleDestination))
+  .pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
+
+  .pipe(rename({suffix: '.min'}))
+  .pipe(cssmin({
+    keepSpecialComments: 0
+  }))
+  .pipe(gulp.dest(styleDestination))
+  .pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
+
+});
+
+
+/**
+  * Task: `scripts`.
+  *
+  * Concatenate and uglify custom scripts.
+  *
+  */
+gulp.task( 'scripts', function() {
+  gulp.src( scriptsSRC )
+  .pipe(jshint())
+  .pipe(jshint.reporter('jshint-stylish'))
+
+  .pipe( concat( scriptsFile + '.js' ) )
+  .pipe( gulp.dest( scriptsDestination ) )
+
+  .pipe( rename( {
+    basename: scriptsFile,
+    suffix: '.min'
+  }))
+  .pipe( uglify() )
+  .pipe( gulp.dest( scriptsDestination ) )
+});
+
+
+/**
+  * Task: `images`.
+  *
+  * Compresses PNG, JPEG, GIF and SVG images.
+  *
+  * This task does the following:
+  *     1. Gets the images from src folder
+  *     2. Compresses PNG, JPEG, GIF and SVG images
+  *     3. Generates and saves the optimized images in dist folder
+  *
+  */
+gulp.task( 'images', function() {
+  gulp.src( imagesSRC )
+
+  .pipe( imagemin( {
+    progressive: true,
+    optimizationLevel: 3, // 0-7 low-high
+    interlaced: true,
+    svgoPlugins: [{removeViewBox: false}]
+  } ) )
+
+  .pipe(gulp.dest( imagesDestination ))
+});
 
 
 /**
@@ -98,7 +181,7 @@ var reload          = browserSync.reload; // For manual browser reload.
  *    3. You may define a custom port
  *    4. You may want to stop the browser from openning automatically
  */
- gulp.task( 'browser-sync', function() {
+gulp.task( 'browser-sync', function() {
   browserSync.init( {
 
     // For more options
@@ -130,58 +213,12 @@ var reload          = browserSync.reload; // For manual browser reload.
 
 
 /**
- * Task: `styles`.
- *
- * Compiles Less, Autoprefixes it and Minifies CSS.
- *
- */
- gulp.task('styles', function () {
-  gulp.src( styleSRC )
-  .pipe(plumber())
-
-  .pipe(less())
-  .pipe(autoprefixer( AUTOPREFIXER_BROWSERS ))
-  .pipe(gulp.dest(styleDestination))
-  .pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
-
-  .pipe(rename({suffix: '.min'}))
-  .pipe(cssmin())
-  .pipe(gulp.dest(styleDestination))
-  .pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
-
-});
-
-
-/**
-  * Task: `scripts`.
-  *
-  * Concatenate and uglify custom scripts.
-  *
-  */
- gulp.task( 'scripts', function() {
-    gulp.src( scriptsSRC )
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'))
-
-    .pipe( concat( scriptsFile + '.js' ) )
-    .pipe( gulp.dest( scriptsDestination ) )
-
-    .pipe( rename( {
-      basename: scriptsFile,
-      suffix: '.min'
-    }))
-    .pipe( uglify() )
-    .pipe( gulp.dest( scriptsDestination ) )
- });
-
-
- /**
   * Watch Tasks.
   *
   * Watches for file changes and runs specific tasks.
   */
- gulp.task( 'default', ['styles', 'scripts', 'browser-sync'], function () {
+gulp.task( 'default', ['styles', 'scripts', 'browser-sync'], function () {
   gulp.watch( projectHTMLWatchFiles, reload ); // Reload on PHP file changes.
   gulp.watch( styleWatchFiles, [ 'styles' ] ); // Reload on SCSS file changes.
   gulp.watch( scriptsWatchFiles, [ 'scripts', reload ] ); // Reload on customJS file changes.
- });
+});
