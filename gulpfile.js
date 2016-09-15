@@ -21,29 +21,57 @@
  *
  * Project Configuration for gulp tasks.
  *
- * In paths you can add <<glob or array of globs>>. Edit the variables as per your project requirements.
+ * Edit the variables as per your project requirements.
  */
-
-// Style related.
-var styleSRC                = './src/less/main.less'; // Path to main .scss file.
-var styleDestination        = './dist/css/'; // Path to place the compiled CSS file.
-
-// JS Custom related.
-var scriptsSRC              = './src/js/*.js'; // Path to JS custom scripts folder.
-var scriptsDestination      = './dist/js/'; // Path to place the compiled JS custom scripts file.
-var scriptsFile             = 'script'; // Compiled JS custom file name.
-
-// Images related.
-var imagesSRC               = './src/img/**/*.{png,jpg,gif,svg}'; // Source folder of images which should be optimized.
-var imagesDestination       = './dist/img/'; // Destination folder of optimized images. Must be different from the imagesSRC folder.
-
-// Watch files paths.
-var styleWatchFiles         = './src/less/**/*.less'; // Path to all *.scss files inside css folder and inside them.
-var scriptsWatchFiles       = './src/js/*.js'; // Path to all custom JS files.
-var projectHTMLWatchFiles   = './src/site/**/*.html'; // Path to all HTML files.
+// Project root folders
+var basePaths = {
+  src: 'src/',
+  dest: 'dist/'
+};
+// Styles folders and files
+var styles = {
+  src: {
+    path      : basePaths.src + 'less/',
+    mainFile : basePaths.src + 'less/main.less',
+    allFiles  : basePaths.src + 'less/**/*.less'
+  },
+  dest: {
+    path      : basePaths.dest + 'css/',
+    files     : basePaths.dest + 'css/*.css'
+  }
+};
+// Scripts folders and files
+var scripts = {
+  src: {
+    path      : basePaths.src + 'js/',
+    files     : basePaths.src + 'js/*.js'
+  },
+  dest: {
+    path      : basePaths.dest + 'js/',
+    files     : basePaths.dest + 'js/*.js'
+  }
+};
+// Image folders and files
+var images = {
+  src: {
+    path      : basePaths.src + 'img/',
+    files     : basePaths.src + 'img/*.{png,jpg,gif,svg}'
+  },
+  dest: {
+    path      : basePaths.dest + 'img/',
+    files     : basePaths.dest + 'img/*.{png,jpg,gif,svg}'
+  }
+};
+// Watch variables
+var watch = {
+  styles    : styles.src.allFiles,
+  scripts   : scripts.src.files,
+  images    : images.src.files,
+  html      : basePaths.src + '**/*.html'
+};
 
 // Browsers you care about for autoprefixing.
-// Browserlist https        ://github.com/ai/browserslist
+// Browserlist https://github.com/ai/browserslist
 const AUTOPREFIXER_BROWSERS = [
   'last 2 version',
   '> 1%',
@@ -57,43 +85,58 @@ const AUTOPREFIXER_BROWSERS = [
   'android >= 4',
   'bb >= 10'
 ];
+// End of project variables
 
 /**
  * Load Plugins.
  *
- * Load gulp plugins and assing them semantic names.
+ * Load gulp plugins and assigning them semantic names.
  */
-var gulp            = require('gulp'); // Gulp of-course
-var gutil           = require('gulp-util'); //Utility functions for gulp plugins
+var gulp         = require('gulp');                  // Gulp of-course
+var gutil        = require('gulp-util');             // Utility functions for gulp plugins
 
 // CSS related plugins.
-var less            = require('gulp-less'); // Gulp pluign for Sass compilation.
-var cssmin          = require('gulp-cssmin'); // Minifies CSS files.
-var autoprefixer    = require('gulp-autoprefixer'); // Autoprefixing magic.
+var less         = require('gulp-less');             // Gulp pluign for Sass compilation.
+var cssmin       = require('gulp-cssmin');           // Minifies CSS files.
+var autoprefixer = require('gulp-autoprefixer');     // Autoprefixing magic.
 
 // JS related plugins.
-var jshint          = require('gulp-jshint'); // JSHint plugin for gulp
-var concat          = require('gulp-concat'); // Concatenates JS files
-var uglify          = require('gulp-uglify'); // Minifies JS files
+var jshint       = require('gulp-jshint');           // JSHint plugin for gulp
+var concat       = require('gulp-concat');           // Concatenates JS files
+var uglify       = require('gulp-uglify');           // Minifies JS files
 
 // Image realted plugins.
-var imagemin        = require('gulp-imagemin'); // Minify PNG, JPEG, GIF and SVG images with imagemin.
+var imagemin     = require('gulp-imagemin');         // Minify PNG, JPEG, GIF and SVG images with imagemin.
 
 // Utility related plugins.
-var plumber         = require('gulp-plumber'); // Prevent pipe breaking caused by errors from gulp plugins
-var rename          = require('gulp-rename'); // Renames files E.g. style.css -> style.min.css
-var notify          = require('gulp-notify'); // Sends message notification to you
-var browserSync     = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
-var reload          = browserSync.reload; // For manual browser reload.
+var plumber      = require('gulp-plumber');          // Prevent pipe breaking caused by errors from gulp plugins
+var size         = require('gulp-size');             // Logs out the total size of files in the stream and optionally the individual file-sizes
+var rename       = require('gulp-rename');           // Renames files E.g. style.css -> style.min.css
+var notify       = require('gulp-notify');           // Sends message notification to you
+var browserSync  = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
+var reload       = browserSync.reload;               // For manual browser reload.
+var del          = require('del');                   // Delete files and folders
+var gulpSequence = require('gulp-sequence');         // Run a series of gulp tasks in order
+
 
 /**
  * Log Errors
  */
-function errorLog (err) {
-  notify.onError({title: "LESS Error", message: "Check your terminal"})(err); //Error Notification
+function errorLog(err) {
+  notify.onError({title: "Gulp Task Error", message: "Check your terminal"})(err); //Error Notification
   console.log(err.toString()); //Prints Error to Console
   this.emit('end');
 }
+
+
+/**
+ * Task: Cleanup
+ *
+ * Cleanups dest files
+ */
+gulp.task('clean', function() {
+  return del([styles.dest.path, scripts.dest.path]);
+});
 
 
 /**
@@ -102,23 +145,28 @@ function errorLog (err) {
  * Compiles Less, Autoprefixes it and Minifies CSS.
  *
  */
- gulp.task('styles', function () {
-  gulp.src( styleSRC )
-  .pipe(plumber({errorHandler: errorLog}))
+ gulp.task('styles', function() {
+  return gulp.src( styles.src.mainFile )
+    .pipe( plumber({errorHandler: errorLog}) )
 
-  .pipe(less())
+    .pipe( less() )
 
-  .pipe(autoprefixer( AUTOPREFIXER_BROWSERS ))
-  .pipe(gulp.dest(styleDestination))
-  .pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
+    .pipe( autoprefixer( AUTOPREFIXER_BROWSERS ) )
+    .pipe( gulp.dest( styles.dest.path ) )
+    .pipe( size({
+      showFiles: true
+    }) )
+    .pipe( browserSync.stream() ) // Injects style.css if that is enqueued
 
-  .pipe(rename({suffix: '.min'}))
-  .pipe(cssmin({
-    keepSpecialComments: 0
-  }))
-  .pipe(gulp.dest(styleDestination))
-  .pipe( browserSync.stream() ) // Reloads style.css if that is enqueued.
-
+    .pipe( rename({suffix: '.min'}))
+    .pipe( cssmin({
+      keepSpecialComments: false
+    }))
+    .pipe( gulp.dest( styles.dest.path ) )
+    .pipe( size({
+      showFiles: true
+    }) )
+    .pipe( browserSync.stream() ); // Injects style.css if that is enqueued
 });
 
 
@@ -129,19 +177,27 @@ function errorLog (err) {
   *
   */
 gulp.task( 'scripts', function() {
-  gulp.src( scriptsSRC )
-  .pipe(jshint())
-  .pipe(jshint.reporter('jshint-stylish'))
+  return gulp.src( scripts.src.files )
+    .pipe( plumber({errorHandler: errorLog}) )
 
-  .pipe( concat( scriptsFile + '.js' ) )
-  .pipe( gulp.dest( scriptsDestination ) )
+    .pipe( jshint() )
+    .pipe( jshint.reporter('jshint-stylish') )
 
-  .pipe( rename( {
-    basename: scriptsFile,
-    suffix: '.min'
-  }))
-  .pipe( uglify() )
-  .pipe( gulp.dest( scriptsDestination ) )
+    .pipe( concat( 'script.js' ) )
+    .pipe( gulp.dest( scripts.dest.path ) )
+    .pipe( size({
+      showFiles: true
+    }) )
+
+    .pipe( rename( {
+      basename: 'script',
+      suffix: '.min'
+    }))
+    .pipe( uglify() )
+    .pipe( gulp.dest( scripts.dest.path ) )
+    .pipe( size({
+      showFiles: true
+    }) );
 });
 
 
@@ -156,17 +212,17 @@ gulp.task( 'scripts', function() {
   *     3. Generates and saves the optimized images in dist folder
   *
   */
-gulp.task( 'images', function() {
-  gulp.src( imagesSRC )
+gulp.task( 'image:compress', function() {
+  return gulp.src( images.src.files )
 
-  .pipe( imagemin( {
-    progressive: true,
-    optimizationLevel: 3, // 0-7 low-high
-    interlaced: true,
-    svgoPlugins: [{removeViewBox: false}]
-  } ) )
+    .pipe( imagemin( {
+      optimizationLevel: 5, // 0-7 low-high
+      progressive: true,
+      interlaced: true,
+      svgoPlugins: [{removeViewBox: false}]
+    }))
 
-  .pipe(gulp.dest( imagesDestination ))
+    .pipe(gulp.dest( images.dest.path ));
 });
 
 
@@ -184,15 +240,10 @@ gulp.task( 'images', function() {
 gulp.task( 'browser-sync', function() {
   browserSync.init( {
 
-    // For more options
-    // @link http://www.browsersync.io/docs/options/
-
+    // built-in static server for basic HTML/JS/CSS websites
     server: {
       baseDir: "./dist/"
     },
-
-    // Project URL.
-    // proxy: projectURL,
 
     // `true` Automatically open the browser with BrowserSync live server.
     // `false` Stop the browser from automatically opening.
@@ -207,9 +258,14 @@ gulp.task( 'browser-sync', function() {
 
     // The small pop-over notifications in the browser are not always needed/wanted
     notify: false,
-
-  } );
+  });
 });
+
+
+/**
+ * Default Gulp task
+ */
+gulp.task( 'default', gulpSequence('clean', 'styles', 'scripts', 'image:compress'));
 
 
 /**
@@ -217,8 +273,9 @@ gulp.task( 'browser-sync', function() {
   *
   * Watches for file changes and runs specific tasks.
   */
-gulp.task( 'default', ['styles', 'scripts', 'browser-sync'], function () {
-  gulp.watch( projectHTMLWatchFiles, reload ); // Reload on PHP file changes.
-  gulp.watch( styleWatchFiles, [ 'styles' ] ); // Reload on SCSS file changes.
-  gulp.watch( scriptsWatchFiles, [ 'scripts', reload ] ); // Reload on customJS file changes.
+gulp.task( 'serve', ['styles', 'scripts', 'browser-sync'], function() {
+  gulp.watch( watch.html, reload ); // Reload on PHP file changes.
+  gulp.watch( watch.styles, [ 'styles' ] ); // Reload on SCSS file changes.
+  gulp.watch( watch.scripts, [ 'scripts', reload ] ); // Reload on customJS file changes.
+  gulp.watch( watch.images, [ 'image:compress', reload ] ); // Reload on image file changes.
 });
