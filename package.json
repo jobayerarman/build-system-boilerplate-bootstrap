@@ -1,7 +1,7 @@
 {
   "name": "build-system-boilerplate-bootstrap",
   "description": "Build system boilerplate using Bootstrap LESS. Folder layout design using SASS guidelines for easy maintain & change.",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": {
     "name": "Jobayer Arman",
     "email": "carbonjha@gmail.com"
@@ -31,5 +31,8 @@
     "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.3",
     "jshint-stylish": "^1.0.0"
+  },
+  "dependencies": {
+    "gulp-conventional-changelog": "^1.1.0"
   }
 }

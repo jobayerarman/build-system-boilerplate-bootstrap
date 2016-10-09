@@ -13,7 +13,7 @@
  *      8. InjectCSS instead of browser page reload.
  *
  * @author Jobayer Arman (@JobayerArman)
- * @version 1.2.0
+ * @version 1.2.1
  */
 
 /**
@@ -56,8 +56,8 @@ var scripts = {
 var html = {
   src: {
     path      : basePaths.src + 'site/',
-    pages     : basePaths.src + 'site/pages/*.html',
-    files     : basePaths.src + 'site/**/*.html',
+    pages     : basePaths.src + 'site/pages/*.+(html|njk)',
+    files     : basePaths.src + 'site/**/*.+(html|njk)',
     templates : basePaths.src + 'site/templates'
   },
   dest: {
@@ -135,13 +135,13 @@ var size         = require('gulp-size');             // Logs out the total size 
 
 
 /**
- * Log Errors
+ * Notify Errors
  */
 function errorLog(err) {
   notify.onError({title: "Gulp Task Error", message: "Check your terminal"})(err); //Error Notification
   console.log(err.toString()); //Prints Error to Console
   this.emit('end');
-}
+};
 
 
 /**
@@ -221,6 +221,7 @@ gulp.task( 'scripts', function() {
  */
 gulp.task( 'render-html', function() {
   return gulp.src( html.src.pages )
+    .pipe( plumber({errorHandler: errorLog}) )
     .pipe(htmlRender({
       path: html.src.templates
     }))
