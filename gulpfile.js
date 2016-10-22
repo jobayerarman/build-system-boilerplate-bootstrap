@@ -168,20 +168,20 @@ gulp.task('clean', function() {
 
     .pipe( autoprefixer( AUTOPREFIXER_BROWSERS ) )
     .pipe( gulp.dest( styles.dest.path ) )
+    .pipe( browserSync.stream() ) // Injects style.css if that is enqueued
     .pipe( size({
       showFiles: true
     }) )
-    .pipe( browserSync.stream() ) // Injects style.css if that is enqueued
 
     .pipe( rename({suffix: '.min'}))
     .pipe( cssmin({
       keepSpecialComments: false
     }))
     .pipe( gulp.dest( styles.dest.path ) )
+    .pipe( browserSync.stream() ) // Injects style.min.css if that is enqueued
     .pipe( size({
       showFiles: true
-    }) )
-    .pipe( browserSync.stream() ); // Injects style.css if that is enqueued
+    }) );
 });
 
 
@@ -285,15 +285,11 @@ gulp.task( 'browser-sync', function() {
     // `false` Stop the browser from automatically opening.
     open: false,
 
-    // Inject CSS changes.
-    // Commnet it to reload browser for every CSS change.
-    injectChanges: true,
-
     // Console log connections
-    logConnections: false,
+    logConnections: true,
 
     // The small pop-over notifications in the browser are not always needed/wanted
-    notify: false,
+    notify: true,
   });
 });
 
@@ -305,13 +301,19 @@ gulp.task( 'default', gulpSequence('clean', 'render-html', 'styles', 'scripts', 
 
 
 /**
+ * Run all the tasks sequentially
+ * Use this task for development
+ */
+gulp.task( 'serve', gulpSequence('render-html', 'styles', 'scripts', 'watch'));
+
+/**
   * Watch Tasks.
   *
   * Watches for file changes and runs specific tasks.
   */
-gulp.task( 'serve', ['render-html', 'styles', 'scripts', 'browser-sync'], function() {
-  gulp.watch( watch.html, [ 'render-html', reload] );       // Render files and reload on HTML file changes.
-  gulp.watch( watch.styles, [ 'styles' ] );                 // Reload on SCSS file changes.
-  gulp.watch( watch.scripts, [ 'scripts', reload ] );       // Reload on customJS file changes.
-  gulp.watch( watch.images, [ 'image:compress', reload ] ); // Reload on image file changes.
+gulp.task( 'watch', ['browser-sync'], function() {
+  gulp.watch( watch.styles, [ 'styles' ] );                               // Run LESS task on file changes.
+  gulp.watch( watch.html, [ 'render-html' ]).on("change", reload );       // Render files and reload on HTML file changes.
+  gulp.watch( watch.scripts, [ 'scripts' ] ).on("change", reload );       // Reload on customJS file changes.
+  gulp.watch( watch.images, [ 'image:compress' ] ).on("change", reload ); // Reload on image file changes.
 });
