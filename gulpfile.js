@@ -13,7 +13,7 @@
  *      8. InjectCSS instead of browser page reload.
  *
  * @author Jobayer Arman (@JobayerArman)
- * @version 1.2.1
+ * @version 1.3.5
  */
 
 /**
@@ -137,9 +137,30 @@ var size         = require('gulp-size');             // Logs out the total size 
 /**
  * Notify Errors
  */
-function errorLog(err) {
-  notify.onError({title: "Gulp Task Error", message: "Check your terminal"})(err); //Error Notification
-  console.log(err.toString()); //Prints Error to Console
+function errorLog(error) {
+  var lineNumber = (error.line) ? 'Line ' + error.line + ' -- ' : '';
+  var column     = (error.column) ? 'Col ' + error.column : '';
+
+  notify({
+    title: 'Task [' + error.plugin + '] Failed',
+    message: lineNumber + '' + column
+  }).write(error); //Error Notification
+
+  // Inspect the error object
+  // console.log(error);
+
+  // Pretty error reporting
+  var report = '';
+  var chalk = gutil.colors.white.bgRed;
+
+  report += '\n';
+  report += chalk('TASK:') + ' [' + error.plugin + ']\n';
+  report += chalk('PROB:') + ' ' + error.message + '\n';
+  if (error.lineNumber) { report += chalk('LINE:') + ' ' + error.lineNumber + '\n'; }
+  if (error.column) { report += chalk('COL:') + '  ' + error.column + '\n'; }
+  if (error.fileName)   { report += chalk('FILE:') + ' ' + error.fileName + '\n'; }
+  console.error(report);
+
   this.emit('end');
 };
 
@@ -312,8 +333,22 @@ gulp.task( 'serve', gulpSequence('render-html', 'styles', 'scripts', 'watch'));
   * Watches for file changes and runs specific tasks.
   */
 gulp.task( 'watch', ['browser-sync'], function() {
-  gulp.watch( watch.styles, [ 'styles' ] );                               // Run LESS task on file changes.
-  gulp.watch( watch.html, [ 'render-html' ]).on("change", reload );       // Render files and reload on HTML file changes.
-  gulp.watch( watch.scripts, [ 'scripts' ] ).on("change", reload );       // Reload on customJS file changes.
-  gulp.watch( watch.images, [ 'image:compress' ] ).on("change", reload ); // Reload on image file changes.
+  gulp.watch( watch.styles, [ 'styles' ] );    // Run LESS task on file changes.
+  gulp.watch( watch.html, [ 'watch-html' ] );  // Render files and reload on HTML file changes.
+  gulp.watch( watch.scripts, [ 'watch-js' ] ); // Reload on customJS file changes.
+  gulp.watch( watch.images, [ 'watch-img' ] ); // Reload on image file changes.
+});
+
+// reloading browsers
+gulp.task('watch-html', ['render-html'], function (done) {
+    browserSync.reload();
+    done();
+});
+gulp.task('watch-js', ['scripts'], function (done) {
+    browserSync.reload();
+    done();
+});
+gulp.task('watch-img', ['image:compress'], function (done) {
+    browserSync.reload();
+    done();
 });
