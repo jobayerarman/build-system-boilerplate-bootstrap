@@ -125,6 +125,8 @@ var imagemin     = require('gulp-imagemin');         // Minify PNG, JPEG, GIF an
 var browserSync  = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
 var del          = require('del');                   // Delete files and folders
 var gulpSequence = require('gulp-sequence');         // Run a series of gulp tasks in order
+var gulpif       = require('gulp-if');               // A ternary gulp plugin: conditionally control the flow of vinyl objects.
+var lazypipe     = require('lazypipe');              // Lazypipe allows to create an immutable, lazily-initialized pipeline.
 var notify       = require('gulp-notify');           // Sends message notification to you
 var plumber      = require('gulp-plumber');          // Prevent pipe breaking caused by errors from gulp plugins
 var reload       = browserSync.reload;               // For manual browser reload.
@@ -132,9 +134,10 @@ var rename       = require('gulp-rename');           // Renames files E.g. style
 var size         = require('gulp-size');             // Logs out the total size of files in the stream and optionally the individual file-sizes
 
 var config = {
-  production: !!gutil.env.production // Two exclamations turn undefined into a proper false.
-}
-console.log(gutil.env.production);
+  production: !!gutil.env.production, // Two exclamations turn undefined into a proper false.
+  sourceMaps:  !gutil.env.production
+};
+console.log(config.sourceMaps);
 
 /**
  * Notify Errors
@@ -189,28 +192,26 @@ gulp.task('clean:all', gulpSequence('clean:css', 'clean:html', 'clean:js'));
  * Compiles Less, Autoprefixes it and Minifies CSS.
  *
  */
- gulp.task('styles', function() {
+var minifyCss = lazypipe()
+  .pipe( rename, {suffix: '.min'})
+  .pipe( cssmin, {keepSpecialComments: false});
+
+ gulp.task('styles', ['clean:css'], function() {
   return gulp.src( styles.src.mainFile )
     .pipe( plumber( {errorHandler: errorLog}) )
-    .pipe(sourcemaps.init())
+    .pipe( sourcemaps.init() )
     .pipe( less() )
     .pipe( sourcemaps.write( { includeContent: false } ) ) // By default the source maps include the source code. Pass false to use the original files.
     .pipe( sourcemaps.init( { loadMaps: true } ) )         // Set to true to load existing maps for source files.
 
     .pipe( autoprefixer( AUTOPREFIXER_BROWSERS ) )
-    .pipe( sourcemaps.write ( '.' ) )
-    .pipe( gulp.dest( styles.dest.path ) )
-    .pipe( browserSync.stream() ) // Injects style.css if that is enqueued
-    .pipe( size({
-      showFiles: true
-    }) )
+    .pipe( gulpif( config.sourceMaps, sourcemaps.write('.') ) )
 
-    .pipe( rename({suffix: '.min'}))
-    .pipe( cssmin({
-      keepSpecialComments: false
-    }))
+    .pipe( gulpif( config.production, minifyCss() ) )
+
     .pipe( gulp.dest( styles.dest.path ) )
-    .pipe( browserSync.stream() ) // Injects style.min.css if that is enqueued
+    .pipe( browserSync.stream() )                          // Injects CSS into browser
+
     .pipe( size({
       showFiles: true
     }) );
