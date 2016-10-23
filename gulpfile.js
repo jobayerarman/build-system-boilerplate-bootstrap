@@ -7,13 +7,10 @@
  *         CSS minification.
  *      3. JS: Concatenates & uglifies Custom JS files.
  *      4. Images: Compresses PNG, JPEG, GIF and SVG images.
- *      5. Watches files for changes in CSS or JS.
- *      6. Watches files for changes in HTML.
- *      7. Corrects the line endings.
- *      8. InjectCSS instead of browser page reload.
+ *      5. Watches files for changes in CSS or JS and HTML.
+ *      6. InjectCSS instead of reloading browser page.
  *
  * @author Jobayer Arman (@JobayerArman)
- * @version 1.3.5
  */
 
 /**
@@ -37,7 +34,7 @@ var styles = {
   },
   dest: {
     path      : basePaths.dest + 'css/',
-    files     : basePaths.dest + 'css/*.css'
+    files     : basePaths.dest + 'css/*.+(css|map)'
   }
 };
 // Scripts folders and files
@@ -113,7 +110,6 @@ var cssmin       = require('gulp-cssmin');           // Minifies CSS files.
 var autoprefixer = require('gulp-autoprefixer');     // Autoprefixing magic.
 var sourcemaps   = require('gulp-sourcemaps');       // Maps code in a compressed file (E.g. style.css) back to it’s original position in a source file.
 
-
 // JS related plugins.
 var jshint       = require('gulp-jshint');           // JSHint plugin for gulp
 var concat       = require('gulp-concat');           // Concatenates JS files
@@ -135,6 +131,10 @@ var reload       = browserSync.reload;               // For manual browser reloa
 var rename       = require('gulp-rename');           // Renames files E.g. style.css -> style.min.css
 var size         = require('gulp-size');             // Logs out the total size of files in the stream and optionally the individual file-sizes
 
+var config = {
+  production: !!gutil.env.production // Two exclamations turn undefined into a proper false.
+}
+console.log(gutil.env.production);
 
 /**
  * Notify Errors
@@ -172,10 +172,16 @@ function errorLog(error) {
  *
  * Cleanups dest files
  */
-gulp.task('clean', function() {
-  return del([styles.dest.path, scripts.dest.path]);
+gulp.task('clean:css', function() {
+  return del([styles.dest.files]);
 });
-
+gulp.task('clean:html', function() {
+  return del([html.dest.files]);
+});
+gulp.task('clean:js', function() {
+  return del([scripts.dest.files]);
+});
+gulp.task('clean:all', gulpSequence('clean:css', 'clean:html', 'clean:js'));
 
 /**
  * Task: `styles`.
@@ -323,7 +329,7 @@ gulp.task( 'browser-sync', function() {
 /**
  * Default Gulp task
  */
-gulp.task( 'default', gulpSequence('clean', 'render-html', 'styles', 'scripts', 'image:compress'));
+gulp.task( 'default', gulpSequence('clean:all', 'render-html', 'styles', 'scripts', 'image:compress'));
 
 
 /**
