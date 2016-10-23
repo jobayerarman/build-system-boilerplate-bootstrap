@@ -137,7 +137,6 @@ var config = {
   production: !!gutil.env.production, // Two exclamations turn undefined into a proper false.
   sourceMaps:  !gutil.env.production
 };
-console.log(config.sourceMaps);
 
 /**
  * Notify Errors
@@ -199,18 +198,21 @@ var minifyCss = lazypipe()
  gulp.task('styles', ['clean:css'], function() {
   return gulp.src( styles.src.mainFile )
     .pipe( plumber( {errorHandler: errorLog}) )
-    .pipe( sourcemaps.init() )
+    .pipe( gulpif( config.sourceMaps, sourcemaps.init() ) )
+
     .pipe( less() )
-    .pipe( sourcemaps.write( { includeContent: false } ) ) // By default the source maps include the source code. Pass false to use the original files.
-    .pipe( sourcemaps.init( { loadMaps: true } ) )         // Set to true to load existing maps for source files.
+
+    .pipe( gulpif( config.sourceMaps, sourcemaps.write({ includeContent: false }) ) ) // By default the source maps include the source code. Pass false to use the original files.
+    .pipe( gulpif( config.sourceMaps, sourcemaps.init({ loadMaps: true }) ) )         // Set to true to load existing maps for source files.
 
     .pipe( autoprefixer( AUTOPREFIXER_BROWSERS ) )
+
     .pipe( gulpif( config.sourceMaps, sourcemaps.write('.') ) )
 
     .pipe( gulpif( config.production, minifyCss() ) )
 
     .pipe( gulp.dest( styles.dest.path ) )
-    .pipe( browserSync.stream() )                          // Injects CSS into browser
+    .pipe( browserSync.stream() )                                                     // Injects CSS into browser
 
     .pipe( size({
       showFiles: true
@@ -224,7 +226,11 @@ var minifyCss = lazypipe()
   * Concatenate and uglify custom scripts.
   *
   */
-gulp.task( 'scripts', function() {
+var minifyScripts = lazypipe()
+  .pipe( rename, {suffix: '.min'})
+  .pipe( uglify );
+
+gulp.task( 'scripts', ['clean:js'], function() {
   return gulp.src( scripts.src.files )
     .pipe( plumber({errorHandler: errorLog}) )
 
@@ -232,17 +238,10 @@ gulp.task( 'scripts', function() {
     .pipe( jshint.reporter('jshint-stylish') )
 
     .pipe( concat( scripts.dest.filename ) )
-    .pipe( gulp.dest( scripts.dest.path ) )
-    .pipe( size({
-      showFiles: true
-    }) )
+    .pipe( gulpif( config.production, minifyScripts() ) )
 
-    .pipe( rename( {
-      basename: 'script',
-      suffix: '.min'
-    }))
-    .pipe( uglify() )
     .pipe( gulp.dest( scripts.dest.path ) )
+
     .pipe( size({
       showFiles: true
     }) );
