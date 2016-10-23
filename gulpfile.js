@@ -111,6 +111,8 @@ var gutil        = require('gulp-util');             // Utility functions for gu
 var less         = require('gulp-less');             // Gulp pluign for Sass compilation.
 var cssmin       = require('gulp-cssmin');           // Minifies CSS files.
 var autoprefixer = require('gulp-autoprefixer');     // Autoprefixing magic.
+var sourcemaps   = require('gulp-sourcemaps');       // Maps code in a compressed file (E.g. style.css) back to it’s original position in a source file.
+
 
 // JS related plugins.
 var jshint       = require('gulp-jshint');           // JSHint plugin for gulp
@@ -184,10 +186,13 @@ gulp.task('clean', function() {
  gulp.task('styles', function() {
   return gulp.src( styles.src.mainFile )
     .pipe( plumber( {errorHandler: errorLog}) )
-
+    .pipe(sourcemaps.init())
     .pipe( less() )
+    .pipe( sourcemaps.write( { includeContent: false } ) ) // By default the source maps include the source code. Pass false to use the original files.
+    .pipe( sourcemaps.init( { loadMaps: true } ) )         // Set to true to load existing maps for source files.
 
     .pipe( autoprefixer( AUTOPREFIXER_BROWSERS ) )
+    .pipe( sourcemaps.write ( '.' ) )
     .pipe( gulp.dest( styles.dest.path ) )
     .pipe( browserSync.stream() ) // Injects style.css if that is enqueued
     .pipe( size({
