@@ -124,6 +124,7 @@ var imagemin     = require('gulp-imagemin');         // Minify PNG, JPEG, GIF an
 // Utility related plugins.
 var browserSync  = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
 var del          = require('del');                   // Delete files and folders
+var filter       = require('gulp-filter');           // Helps work on a subset of the original files by filtering them using globbing.
 var gulpSequence = require('gulp-sequence');         // Run a series of gulp tasks in order
 var gulpif       = require('gulp-if');               // A ternary gulp plugin: conditionally control the flow of vinyl objects.
 var lazypipe     = require('lazypipe');              // Lazypipe allows to create an immutable, lazily-initialized pipeline.
@@ -212,6 +213,7 @@ var minifyCss = lazypipe()
     .pipe( gulpif( config.production, minifyCss() ) )
 
     .pipe( gulp.dest( styles.dest.path ) )
+    .pipe( filter( '**/*.css' ) )                                                     // Filtering stream to only css files
     .pipe( browserSync.stream() )                                                     // Injects CSS into browser
 
     .pipe( size({
