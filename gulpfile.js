@@ -123,6 +123,7 @@ var imagemin     = require('gulp-imagemin');         // Minify PNG, JPEG, GIF an
 
 // Utility related plugins.
 var browserSync  = require('browser-sync').create(); // Reloads browser and injects CSS. Time-saving synchronised browser testing.
+var changed      = require('gulp-changed');          // No more wasting precious time on processing unchanged files.
 var del          = require('del');                   // Delete files and folders
 var filter       = require('gulp-filter');           // Helps work on a subset of the original files by filtering them using globbing.
 var gulpSequence = require('gulp-sequence');         // Run a series of gulp tasks in order
@@ -256,7 +257,8 @@ gulp.task( 'scripts', ['clean:js'], function() {
 gulp.task( 'render-html', function() {
   return gulp.src( html.src.pages )
     .pipe( plumber({errorHandler: errorLog}) )
-    .pipe(htmlRender({
+    .pipe( changed( html.dest.path, {extension: '.html'} ))
+    .pipe( htmlRender({
       path: html.src.templates
     }))
     .pipe( gulp.dest( html.dest.path ))
