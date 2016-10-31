@@ -19,3 +19,6 @@ $RECYCLE.BIN/
 
 # Node.js Modules
 node_modules/
+
+# Distribution folder
+dist/
